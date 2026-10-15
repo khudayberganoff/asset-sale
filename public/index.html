@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aktiv sotib olish uchun ariza</title>
+<meta name="description" content="O'zingizga kerakli aktiv yoki mulkni tanlang va ariza qoldiring — mutaxassislarimiz siz bilan bog'lanadi.">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Aktiv va mulk sotib olish</h1>
+    <p class="muted">Kerakli aktivni tanlang va ariza qoldiring. Mutaxassisimiz siz bilan tez orada bog'lanadi.</p>
+  </header>
+
+  <section aria-label="Aktivlar">
+    <div id="assets" class="grid"><p class="muted">Yuklanmoqda…</p></div>
+  </section>
+
+  <div id="done" class="ok" hidden>
+    <strong>Arizangiz qabul qilindi!</strong>
+    <p class="muted" style="margin:6px 0 0">Ariza raqami: <span id="appNo"></span>. Tez orada siz bilan bog'lanamiz.</p>
+  </div>
+
+  <form id="form" novalidate>
+    <h2 style="margin:0">Ariza qoldirish</h2>
+    <label>Aktiv
+      <select name="asset_id" id="assetSel"></select>
+      <span class="err" data-err="asset_id"></span>
+    </label>
+    <label id="customWrap" hidden>Qaysi aktiv kerak?
+      <input name="custom_asset" maxlength="200" placeholder="Masalan: Damas 2020">
+    </label>
+    <label>F.I.Sh.
+      <input name="full_name" autocomplete="name" required maxlength="120">
+      <span class="err" data-err="full_name"></span>
+    </label>
+    <label>Telefon raqami
+      <input name="phone" type="tel" autocomplete="tel" placeholder="+998 90 123 45 67" required>
+      <span class="err" data-err="phone"></span>
+    </label>
+    <label>Izoh (ixtiyoriy)
+      <textarea name="comment" maxlength="1000"></textarea>
+      <span class="err" data-err="comment"></span>
+    </label>
+    <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <span class="err" id="formErr"></span>
+    <button type="submit" id="submitBtn">Ariza yuborish</button>
+  </form>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

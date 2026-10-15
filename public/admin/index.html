@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Arizalar navbati</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Arizalar navbati</h1>
+    <p class="muted">Eng eski ariza tepada. Yangi arizalar pastga qo'shiladi.</p></header>
+
+  <form id="login" style="margin:0 0 20px">
+    <label>Admin paroli <input type="password" id="token" autocomplete="current-password"></label>
+    <span class="err" id="loginErr"></span>
+    <button type="submit">Kirish</button>
+  </form>
+
+  <main id="panel" hidden>
+    <div class="bar">
+      <select id="filter" style="width:auto">
+        <option value="">Barcha (navbat tartibida)</option>
+        <option value="new">Yangi</option>
+        <option value="in_progress">Jarayonda</option>
+        <option value="done">Bajarildi</option>
+        <option value="rejected">Rad etildi</option>
+      </select>
+      <button class="ghost" id="reload" type="button">Yangilash</button>
+      <button class="ghost" id="logout" type="button">Chiqish</button>
+    </div>
+    <div class="scroll"><table>
+      <thead><tr><th>№</th><th>Vaqt</th><th>Aktiv</th><th>Mijoz</th><th>Telefon</th><th>Izoh</th><th>Status</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <p id="empty" class="muted" hidden>Arizalar yo'q.</p>
+  </main>
+</div>
+<script src="/admin/admin.js"></script>
+</body>
+</html>
