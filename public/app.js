@@ -55,6 +55,7 @@ $('#form').addEventListener('submit', async (e) => {
     custom_asset: f.get('custom_asset'),
     full_name: f.get('full_name'),
     phone: f.get('phone'),
+    address: f.get('address'),
     comment: f.get('comment'),
     website: f.get('website'),
   };

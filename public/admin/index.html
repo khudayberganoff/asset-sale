@@ -4,38 +4,58 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Arizalar navbati</title>
-<link rel="stylesheet" href="/style.css">
+<title>CRM — Leadlar</title>
+<link rel="stylesheet" href="/admin/crm.css">
 </head>
 <body>
-<div class="wrap">
-  <header><h1>Arizalar navbati</h1>
-    <p class="muted">Eng eski ariza tepada. Yangi arizalar pastga qo'shiladi.</p></header>
+<form id="login">
+  <h1 style="margin:0">CRM</h1>
+  <label>Admin paroli <input type="password" id="token" autocomplete="current-password"></label>
+  <span class="err" id="loginErr"></span>
+  <button class="primary" type="submit">Kirish</button>
+</form>
 
-  <form id="login" style="margin:0 0 20px">
-    <label>Admin paroli <input type="password" id="token" autocomplete="current-password"></label>
-    <span class="err" id="loginErr"></span>
-    <button type="submit">Kirish</button>
-  </form>
+<div id="app" hidden>
+  <div class="top">
+    <h1>Leadlar</h1>
+    <input type="search" id="q" placeholder="Qidiruv…">
+    <button class="primary" id="newLead" type="button">+ Yangi lead</button>
+    <button id="logout" type="button">Chiqish</button>
+  </div>
+  <div class="board" id="board"></div>
+</div>
 
-  <main id="panel" hidden>
-    <div class="bar">
-      <select id="filter" style="width:auto">
-        <option value="">Barcha (navbat tartibida)</option>
-        <option value="new">Yangi</option>
-        <option value="in_progress">Jarayonda</option>
-        <option value="done">Bajarildi</option>
-        <option value="rejected">Rad etildi</option>
-      </select>
-      <button class="ghost" id="reload" type="button">Yangilash</button>
-      <button class="ghost" id="logout" type="button">Chiqish</button>
+<div class="ov" id="ov" hidden>
+  <form class="modal" id="lf" novalidate>
+    <h2 id="lt">Lead</h2>
+    <div class="fgrid">
+      <label class="full">F.I.Sh. *<input name="full_name" maxlength="120"><span class="e" data-e="full_name"></span></label>
+      <label>Telefon *<input name="phone" type="tel" placeholder="+998 90 123 45 67"><span class="e" data-e="phone"></span></label>
+      <label>Qo'shimcha telefon<input name="phone2" type="tel"><span class="e" data-e="phone2"></span></label>
+      <label class="full">Manzil<input name="address" maxlength="300" placeholder="Viloyat, tuman, ko'cha, uy"><span class="e" data-e="address"></span></label>
+      <label>Pasport (seriya va raqam)<input name="passport" maxlength="30" placeholder="AA1234567"></label>
+      <label>Tug'ilgan sana<input name="birth_date" type="date"><span class="e" data-e="birth_date"></span></label>
+      <label>Email<input name="email" type="email" maxlength="120"><span class="e" data-e="email"></span></label>
+      <label>Manba<input name="source" maxlength="40" list="sources" placeholder="sayt, telefon, Telegram…"></label>
+      <datalist id="sources"><option value="sayt"><option value="telefon"><option value="Telegram"><option value="Instagram"><option value="tavsiya"><option value="ofis"></datalist>
+      <label>Qiziqayotgan aktiv<input name="asset_title" maxlength="200"></label>
+      <label>Byudjet (so'm)<input name="budget" type="number" min="0" step="1000"><span class="e" data-e="budget"></span></label>
+      <label>Mas'ul xodim<input name="responsible" maxlength="80"></label>
+      <label>Keyingi aloqa sanasi<input name="next_contact_at" type="date"><span class="e" data-e="next_contact_at"></span></label>
+      <label>Bosqich<select name="stage" id="stageSel"></select></label>
+      <label class="full">Izoh<textarea name="comment" maxlength="1000"></textarea><span class="e" data-e="comment"></span></label>
     </div>
-    <div class="scroll"><table>
-      <thead><tr><th>№</th><th>Vaqt</th><th>Aktiv</th><th>Mijoz</th><th>Telefon</th><th>Izoh</th><th>Status</th></tr></thead>
-      <tbody id="rows"></tbody>
-    </table></div>
-    <p id="empty" class="muted" hidden>Arizalar yo'q.</p>
-  </main>
+    <span class="err" id="fe"></span>
+    <div class="acts">
+      <button type="button" id="cancel">Yopish</button>
+      <button class="primary" type="submit" id="save">Saqlash</button>
+    </div>
+    <div class="hist" id="hist" hidden>
+      <h3>Tarix va izohlar</h3>
+      <div class="row"><input id="noteText" maxlength="1000" placeholder="Izoh yozing (masalan: qo'ng'iroq qildim, ertaga keladi)"><button type="button" id="noteBtn">Qo'shish</button></div>
+      <div id="notes"></div>
+    </div>
+  </form>
 </div>
 <script src="/admin/admin.js"></script>
 </body>
