@@ -66,12 +66,3 @@ export function validateLead(body, { partial = false, allow = LEAD_FIELDS } = {}
   }
   return { ok: Object.keys(errors).length === 0, errors, value };
 }
-
-// Ommaviy sayt formasi: faqat mijoz o'zi to'ldiradigan maydonlar
-export function validateApplication(body) {
-  const { errors, value } = validateLead(body, { allow: ['full_name', 'phone', 'address', 'comment'] });
-  const asset_id = Number.isInteger(Number(body?.asset_id)) && Number(body?.asset_id) > 0 ? Number(body.asset_id) : null;
-  const custom_asset = clean(body?.custom_asset, 200);
-  if (!asset_id && !custom_asset) errors.asset_id = 'Aktivni tanlang yoki nomini yozing';
-  return { ok: Object.keys(errors).length === 0, errors, value: { ...value, asset_id, custom_asset } };
-}

@@ -2,7 +2,7 @@ import express from 'express';
 import { timingSafeEqual } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { STAGES, stageTitle } from './stages.js';
-import { LEAD_FIELDS, validateApplication, validateLead } from './validate.js';
+import { LEAD_FIELDS, validateLead } from './validate.js';
 
 const PUBLIC_DIR = fileURLToPath(new URL('../public', import.meta.url));
 
@@ -33,32 +33,6 @@ export function createApp(db, { adminToken = process.env.ADMIN_TOKEN || '' } = {
   const addNote = (leadId, text, kind = 'system') =>
     db.prepare('INSERT INTO lead_notes (lead_id, kind, text) VALUES (?,?,?)').run(leadId, kind, text);
 
-  // ---- Ommaviy API ----
-  app.get('/api/assets', (_req, res) => {
-    res.json(db.prepare('SELECT id, title, category, description, price FROM assets WHERE active = 1 ORDER BY id').all());
-  });
-
-  app.post('/api/applications', rateLimit({ windowMs: 10 * 60 * 1000, max: 5 }), (req, res) => {
-    if (req.body?.website) return res.status(201).json({ ok: true }); // honeypot: botlar to'ldiradi
-    const { ok, errors, value } = validateApplication(req.body);
-    if (!ok) return res.status(400).json({ errors });
-    let title = value.custom_asset;
-    let assetId = null;
-    if (value.asset_id) {
-      const a = db.prepare('SELECT id, title FROM assets WHERE id = ? AND active = 1').get(value.asset_id);
-      if (!a) return res.status(400).json({ errors: { asset_id: 'Aktiv topilmadi' } });
-      assetId = a.id;
-      title = a.title;
-    }
-    const r = db.prepare(
-      `INSERT INTO applications (asset_id, asset_title, full_name, phone, address, comment, source, stage)
-       VALUES (?,?,?,?,?,?, 'sayt', 'new')`
-    ).run(assetId, title, value.full_name, value.phone, value.address ?? '', value.comment ?? '');
-    const id = Number(r.lastInsertRowid);
-    addNote(id, 'Lead saytdagi forma orqali keldi');
-    res.status(201).json({ ok: true, id });
-  });
-
   // ---- CRM API (Bearer ADMIN_TOKEN) ----
   const crm = express.Router();
   crm.use((req, res, next) => {
@@ -86,7 +60,7 @@ export function createApp(db, { adminToken = process.env.ADMIN_TOKEN || '' } = {
   crm.post('/leads', (req, res) => {
     const { ok, errors, value } = validateLead(req.body);
     if (!ok) return res.status(400).json({ errors });
-    const data = { source: 'qo\'lda', stage: 'new', ...value };
+    const data = { source: 'qo\'lda', stage: 'new', asset_title: '', ...value }; // asset_title: eski bazalarda NOT NULL
     const keys = Object.keys(data);
     const r = db.prepare(`INSERT INTO applications (${keys.join(',')}) VALUES (${keys.map(() => '?').join(',')})`).run(...Object.values(data));
     const id = Number(r.lastInsertRowid);
@@ -125,28 +99,10 @@ export function createApp(db, { adminToken = process.env.ADMIN_TOKEN || '' } = {
     res.status(201).json({ ok: true });
   });
 
-  crm.get('/assets', (_req, res) => res.json(db.prepare('SELECT * FROM assets ORDER BY id').all()));
-
-  crm.post('/assets', (req, res) => {
-    const title = String(req.body?.title ?? '').trim();
-    if (!title) return res.status(400).json({ error: 'Nomi kerak' });
-    const price = req.body?.price === '' || req.body?.price == null ? null : Math.round(Number(req.body.price));
-    if (price !== null && !(price >= 0)) return res.status(400).json({ error: 'Narx noto\'g\'ri' });
-    const r = db.prepare('INSERT INTO assets (title, category, description, price) VALUES (?,?,?,?)').run(
-      title.slice(0, 200), String(req.body?.category ?? '').trim().slice(0, 60),
-      String(req.body?.description ?? '').trim().slice(0, 500), price);
-    res.status(201).json({ id: Number(r.lastInsertRowid) });
-  });
-
-  crm.patch('/assets/:id', (req, res) => {
-    const r = db.prepare('UPDATE assets SET active = ? WHERE id = ?').run(req.body?.active ? 1 : 0, Number(req.params.id));
-    if (!r.changes) return res.status(404).json({ error: 'Topilmadi' });
-    res.json({ ok: true });
-  });
-
   app.use('/api/admin', crm);
   app.use('/api', (_req, res) => res.status(404).json({ error: 'Topilmadi' }));
 
+  app.get('/', (_req, res) => res.redirect('/admin/'));
   app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
   return app;
 }
